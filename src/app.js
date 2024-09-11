@@ -4,6 +4,9 @@ import cookieParser from "cookie-parser";
 import UserRouter from "./routes/users.router.js";
 import ItemRouter from "./routes/items.router.js";
 import CharacterRouter from "./routes/character.router.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 const PORT = 3018;
