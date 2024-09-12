@@ -65,7 +65,7 @@ router.post("/sign-in", async (req, res, next) => {
   const accessToken = jwt.sign(
     { user_id: user.user_id }, // JWT 데이터
     ACCESS_TOKEN_SECRET_KEY, // Access Token의 비밀 키
-    { expiresIn: "1h" } // Access Token이 30분 뒤에 만료되도록 설정합니다.
+    { expiresIn: "1h" } // Access Token이 1시간 뒤에 만료되도록 설정합니다.
   );
 
   // 헤더에 토큰을 포함시킨다.
@@ -75,7 +75,7 @@ router.post("/sign-in", async (req, res, next) => {
 
 /** 사용자 조회 API **/
 router.get("/users", authMiddleware, async (req, res, next) => {
-  const { userId } = req.user;
+  const { user_Id } = req.user;
 
   const user = await prisma.users.findFirst({
     where: { userId: +userId },
