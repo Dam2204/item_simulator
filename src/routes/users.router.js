@@ -61,18 +61,12 @@ router.post("/sign-in", async (req, res, next) => {
     return res.status(401).json({ message: "비밀번호가 일치하지 않습니다." });
 
   // Access Token을 생성하는 함수
-  function createAccessToken(account) {
-    const accessToken = jwt.sign(
-      { account: account }, // JWT 데이터
-      ACCESS_TOKEN_SECRET_KEY, // Access Token의 비밀 키
-      { expiresIn: "1h" } // Access Token이 30분 뒤에 만료되도록 설정합니다.
-    );
 
-    return accessToken;
-  }
-
-  // 로그인에 성공하면, 사용자의 userId를 바탕으로 토큰을 생성합니다.
-  const accessToken = createAccessToken(account);
+  const accessToken = jwt.sign(
+    { user_id: user.user_id }, // JWT 데이터
+    ACCESS_TOKEN_SECRET_KEY, // Access Token의 비밀 키
+    { expiresIn: "1h" } // Access Token이 30분 뒤에 만료되도록 설정합니다.
+  );
 
   // 헤더에 토큰을 포함시킨다.
   res.header("authorization", `Bearer ${accessToken}`);
