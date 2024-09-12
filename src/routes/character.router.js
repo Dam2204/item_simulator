@@ -7,8 +7,8 @@ import authMiddleware from "../middlewares/auth.middleware.js";
 const router = express.Router();
 
 /** 캐릭터 신규 생성 API **/
-router.post("/characters", async (req, res, next) => {
-  const { userId } = req.user;
+router.post("/characters", authMiddleware, async (req, res, next) => {
+  const { user_Id } = req.header;
   const { character_name } = req.body;
   const isExistCharacter = await prisma.characters.findFirst({
     where: {
@@ -28,7 +28,7 @@ router.post("/characters", async (req, res, next) => {
   // Character 테이블에 사용자를 추가합니다.
   const character = await prisma.characters.create({
     data: {
-      userId: +userId,
+      user_Id: +user_Id,
       character_name,
     },
   });
