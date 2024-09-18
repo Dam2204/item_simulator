@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output = "./generated/UserDataClient"
+}
+
+datasource userdb {
+  provider = "mysql"
+  url      = env("DATABASE_URL2")
+}
+
+model Account {
+  id        Int      @id @default (autoincrement()) @map("id")
+  account   String   @unique @map("account")
+  password  String   @map("password") // 글자수 제한은 router에서 지정 필요
+  name      String   @map("name")
+
+
+  // 사용자(Users) 테이블과 캐릭터(Characters) 테이블이 1:N 관계를 맺습니다.
+  characters Characters[]  
+
+  @@map("Account")
+}
+
+model Characters {
+  id              Int      @id @default (autoincrement()) @map("id")
+  account_id      Int      @unique @map("account_id")
+  name            String   @unique @map("name")
+  health          Int      @default(500) @map("health")
+  power           Int      @default(100) @map("power")
+  money           Int      @default(10000) @map("money")
+
+
+  //Inventory 테이블과 1:N 관계를 설정합니다.
+  inventory Inventory[]
+
+  //Equipment 테이블과 1:N 관계를 설정합니다.
+  equipment Equipment[]
+
+  // Users 테이블과 관계를 설정합니다.
+  account Account @relation(fields: [account_id], references: [id], onDelete: Cascade)
+
+  @@map("Characters")
+}
+
+
+model Inventory {
+  id             Int      @id @default (autoincrement()) @map("id")
+  character_id   Int      @unique @map("character_id")
+  item_id        Int      @map("item_id")
+
+  // Characters 테이블과 관계를 설정합니다.
+  character Characters @relation(fields: [character_id], references: [id], onDelete: Cascade)
+
+  // 
+
+  @@map("Inventory")
+}
+
+model Equipment {
+  id                Int     @id @default (autoincrement()) @map("id")
+  character_id      Int     @unique @map("character_id")
+  item_id           Int     @map("item_id")
+
+  // Characters 테이블과 관계를 설정합니다.
+  character Characters @relation(fields: [character_id], references: [id], onDelete: Cascade)
+  
+  @@map("Equipment")
+}

@@ -1,13 +1,15 @@
-import express from "express";
-import { prisma } from "../utils/prisma/index.js";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import authMiddleware from "../middlewares/auth.middleware.js";
+import express from 'express';
+import { prisma } from '../utils/prisma/index.js';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import authMiddleware from '../middlewares/auth.middleware.js';
+import { PrismaClient as GameDataClient } from '../../../prisma/game/generated/GameDataClient/index.js';
+import { PrismaClient as UserDataClient } from '../../../prisma/user/generated/UserDataClient/index.js';
 
 const router = express.Router();
 
 /** 아이템 신규등록 API **/
-router.post("/new-item", async (req, res, next) => {
+router.post('/new-item', async (req, res, next) => {
   const { item_name, item_status, item_price } = req.body;
   const isExistItem = await prisma.items.findFirst({
     where: {
@@ -16,7 +18,7 @@ router.post("/new-item", async (req, res, next) => {
   });
 
   if (isExistItem) {
-    return res.status(409).json({ message: "이미 존재하는 아이템입니다." });
+    return res.status(409).json({ message: '이미 존재하는 아이템입니다.' });
   }
 
   // Items 테이블에 아이템을 추가합니다.
@@ -24,11 +26,38 @@ router.post("/new-item", async (req, res, next) => {
     data: { item_name, item_status, item_price },
   });
 
-  return res.status(201).json({ message: "아이템 등록이 완료되었습니다." });
+  return res.status(201).json({ message: '아이템 등록이 완료되었습니다.' });
+});
+
+/** 아이템 구매 API **/
+router.post('character/:character_id/purchase', authMiddleware, async (req, res, next) => {
+  const character_id = req.params.character_id;
+  const userId = req.user.user_id;
+  const itemsToPurchase = req.body;
+
+  const character = await UserDataClient.character.findFirst({
+    where: {
+      id: character_id,
+      account: userId,
+    },
+  });
+
+  if (!character) {
+    return res.status(403).json({ message: '권한이 없습니다.' });
+  }
+
+  let totalCost = 0;
+  for (const item of itemsToPurchase) {
+    const { item_code, count } = item;
+    const itemInfo = await GameDataClient.item.findUnique({
+      where: { item_code },
+      select: { item_price: true },
+    });
+  }
 });
 
 /** 아이템 목록 조회 API **/
-router.get("/items", async (req, res, next) => {
+router.get('/items', async (req, res, next) => {
   const items = await prisma.items.findMany({
     select: {
       item_code: true,
@@ -41,7 +70,7 @@ router.get("/items", async (req, res, next) => {
 });
 
 /** 아이템 상세 조회 API **/
-router.get("/items/:item_code", async (req, res, next) => {
+router.get('/items/:item_code', async (req, res, next) => {
   const { item_code } = req.params;
 
   const item = await prisma.items.findFirst({
@@ -58,7 +87,7 @@ router.get("/items/:item_code", async (req, res, next) => {
 });
 
 /** 아이템 수정 API **/
-router.put("/items/:item_code", async (req, res, next) => {
+router.put('/items/:item_code', async (req, res, next) => {
   const { item_code } = req.params;
   const { item_name, item_status } = req.body;
 
@@ -68,8 +97,7 @@ router.put("/items/:item_code", async (req, res, next) => {
     },
   });
 
-  if (!item)
-    return res.status(404).json({ message: "아이템이 존재하지 않습니다." });
+  if (!item) return res.status(404).json({ message: '아이템이 존재하지 않습니다.' });
 
   await prisma.items.update({
     data: {
@@ -81,9 +109,7 @@ router.put("/items/:item_code", async (req, res, next) => {
     },
   });
 
-  return res
-    .status(201)
-    .json({ message: "아이템이 정상적으로 수정되었습니다." });
+  return res.status(201).json({ message: '아이템이 정상적으로 수정되었습니다.' });
 });
 
 export default router;
