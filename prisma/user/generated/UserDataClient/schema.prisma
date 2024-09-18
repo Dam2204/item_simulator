@@ -20,15 +20,15 @@ model Account {
   password String @map("password") // 글자수 제한은 router에서 지정 필요
   name     String @map("name")
 
-  // 사용자(Users) 테이블과 캐릭터(Characters) 테이블이 1:N 관계를 맺습니다.
+  // 사용자(Account) 테이블과 캐릭터(Characters) 테이블이 1:N 관계를 맺습니다.
   characters Characters[]
 
-  @@map("Account")
+  @@map("account")
 }
 
 model Characters {
   id         Int    @id @default(autoincrement()) @map("id")
-  account_id Int    @unique @map("account_id")
+  account_id Int    @map("account_id")
   name       String @unique @map("name")
   health     Int    @default(500) @map("health")
   power      Int    @default(100) @map("power")
@@ -40,15 +40,15 @@ model Characters {
   //Equipment 테이블과 1:N 관계를 설정합니다.
   equipment Equipment[]
 
-  // Users 테이블과 관계를 설정합니다.
+  // Account 테이블과 관계를 설정합니다.
   account Account @relation(fields: [account_id], references: [id], onDelete: Cascade)
 
-  @@map("Characters")
+  @@map("characters")
 }
 
 model Inventory {
   id           Int @id @default(autoincrement()) @map("id")
-  character_id Int @unique @map("character_id")
+  character_id Int @map("character_id")
   item_id      Int @map("item_id")
 
   // Characters 테이블과 관계를 설정합니다.
@@ -56,16 +56,16 @@ model Inventory {
 
   // 
 
-  @@map("Inventory")
+  @@map("inventory")
 }
 
 model Equipment {
   id           Int @id @default(autoincrement()) @map("id")
-  character_id Int @unique @map("character_id")
+  character_id Int @map("character_id")
   item_id      Int @map("item_id")
 
   // Characters 테이블과 관계를 설정합니다.
   character Characters @relation(fields: [character_id], references: [id], onDelete: Cascade)
 
-  @@map("Equipment")
+  @@map("equipment")
 }

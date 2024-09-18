@@ -16,7 +16,8 @@ datasource gamedb {
 
 
 model Items {
-  item_code   Int      @id @default (autoincrement()) @map("item_code")
+  id          Int      @id @default (autoincrement())
+  item_code   Int      @unique @map("item_code")
   item_name   String   @unique @map("item_name")
   health      Int      @map("health")
   power       Int      @map("power")

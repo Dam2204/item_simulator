@@ -5037,18 +5037,18 @@ export namespace Prisma {
 
   export type CharactersWhereUniqueInput = Prisma.AtLeast<{
     id?: number
-    account_id?: number
     name?: string
     AND?: CharactersWhereInput | CharactersWhereInput[]
     OR?: CharactersWhereInput[]
     NOT?: CharactersWhereInput | CharactersWhereInput[]
+    account_id?: IntFilter<"Characters"> | number
     health?: IntFilter<"Characters"> | number
     power?: IntFilter<"Characters"> | number
     money?: IntFilter<"Characters"> | number
     inventory?: InventoryListRelationFilter
     equipment?: EquipmentListRelationFilter
     account?: XOR<AccountRelationFilter, AccountWhereInput>
-  }, "id" | "account_id" | "name">
+  }, "id" | "name">
 
   export type CharactersOrderByWithAggregationInput = {
     id?: SortOrder
@@ -5095,13 +5095,13 @@ export namespace Prisma {
 
   export type InventoryWhereUniqueInput = Prisma.AtLeast<{
     id?: number
-    character_id?: number
     AND?: InventoryWhereInput | InventoryWhereInput[]
     OR?: InventoryWhereInput[]
     NOT?: InventoryWhereInput | InventoryWhereInput[]
+    character_id?: IntFilter<"Inventory"> | number
     item_id?: IntFilter<"Inventory"> | number
     character?: XOR<CharactersRelationFilter, CharactersWhereInput>
-  }, "id" | "character_id">
+  }, "id">
 
   export type InventoryOrderByWithAggregationInput = {
     id?: SortOrder
@@ -5142,13 +5142,13 @@ export namespace Prisma {
 
   export type EquipmentWhereUniqueInput = Prisma.AtLeast<{
     id?: number
-    character_id?: number
     AND?: EquipmentWhereInput | EquipmentWhereInput[]
     OR?: EquipmentWhereInput[]
     NOT?: EquipmentWhereInput | EquipmentWhereInput[]
+    character_id?: IntFilter<"Equipment"> | number
     item_id?: IntFilter<"Equipment"> | number
     character?: XOR<CharactersRelationFilter, CharactersWhereInput>
-  }, "id" | "character_id">
+  }, "id">
 
   export type EquipmentOrderByWithAggregationInput = {
     id?: SortOrder
